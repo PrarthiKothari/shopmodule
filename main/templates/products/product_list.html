@@ -1,0 +1,286 @@
+{% extends 'main/base.html' %}
+{% block title %}Products List - Shop Module{% endblock %}
+{% load icons %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+    <div>
+        <h1 class="h2 mb-1">Products Catalog</h1>
+        <p class="text-muted mb-0">Browse and manage all registered products in your shop.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{% url 'trash_list' %}" class="btn btn-outline-danger">
+            {% icon 'delete' %} Trash ({{ trash_count }})
+        </a>
+        <a href="{% url 'create_product' %}" class="btn btn-primary">
+            {% icon 'plus' %} Create Product
+        </a>
+    </div>
+</div>
+
+{% if products %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h3 class="h4 fw-bold mb-0">Results</h3>
+        <p class="text-muted small mb-0">Check each product page for other buying options.</p>
+    </div>
+    <div class="btn-group btn-group-sm" role="group" aria-label="View toggle">
+        <button type="button" class="btn btn-outline-secondary active" id="btnCardsView" onclick="switchView('cards')">
+            Large Cards
+        </button>
+        <button type="button" class="btn btn-outline-secondary" id="btnTableView" onclick="switchView('table')">
+            Table View
+        </button>
+    </div>
+</div>
+
+<div id="cardsCatalogView" class="mb-4">
+    <div class="row g-3">
+        {% for product in products %}
+        <div class="col-12">
+            <div class="card shadow-sm border-0 product-card overflow-hidden">
+                <div class="card-body p-3 p-md-4">
+                    <div class="row g-3 align-items-center">
+                        <div class="col-12 col-md-4 col-lg-3 text-center">
+                            <div class="bg-white rounded border d-flex align-items-center justify-content-center p-2 position-relative mx-auto"
+                                style="width: 100%; max-width: 220px; height: 200px;">
+                                {% if product.primary_image %}
+                                <a href="{% url 'product_detail' product.id %}">
+                                    <img src="{{ product.primary_image.image.url }}" alt="{{ product.name }}"
+                                        class="img-fluid rounded"
+                                        style="max-height: 185px; max-width: 100%; object-fit: contain;">
+                                </a>
+                                {% else %}
+                                <div class="text-center text-muted p-3">
+                                    <div style="font-size: 2.5rem; opacity: 0.35;">📦</div>
+                                    <div class="small fw-semibold mt-1 text-secondary">No Image</div>
+                                </div>
+                                {% endif %}
+                                {% if product.images.count > 1 %}
+                                <span class="badge bg-dark bg-opacity-75 position-absolute bottom-0 end-0 m-2 small">
+                                    +{{ product.images.count|add:"-1" }} more
+                                </span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-8 col-lg-9">
+                            <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                                <span class="badge bg-dark font-monospace">{{ product.code }}</span>
+                                <span class="badge bg-light text-dark border">{{ product.category.name }}</span>
+                                {% if product.created_by %}
+                                {% if product.created_by == request.user %}
+                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle">By
+                                    You</span>
+                                {% else %}
+                                <span class="badge bg-dark text-warning  border">Seller: {{ product.created_by.username }}{% if product.created_by == request.user %} (You){% endif %}</span>
+                                {% endif %}
+                                {% endif %}
+                            </div>
+
+                            <h4 class="h5 fw-bold mb-1">
+                                <a href="{% url 'product_detail' product.id %}" class="text-dark text-decoration-none">
+                                    {{ product.name }}
+                                </a>
+                            </h4>
+
+                            <p class="text-muted small mb-2"
+                                style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                {{ product.description }}
+                            </p>
+
+                            <div class="d-flex flex-wrap align-items-baseline gap-2 my-2">
+                                <div class="fs-2 fw-bold text-dark lh-1">
+                                    <span class="fs-5 align-top">Rs. </span>{{ product.base_price }}
+                                </div>
+                                {% if product.gst > 0 %}
+                                <span class="text-muted small">
+                                    + Rs. {{ product.gst_amount }} ({{ product.gst }}% GST) &bull; Total: <strong
+                                        class="text-dark">Rs. {{ product.total_price }}</strong>
+                                </span>
+                                {% else %}
+                                <span class="text-muted small">(Inclusive of all taxes)</span>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-3 small">
+                                <span class="fw-semibold text-dark">{{ product.get_delivery_type_display }}:</span>
+                                <span class="text-muted">{{ product.delivery_time }}</span>
+                                {% if product.delivery_charges == 0 %}
+                                <span
+                                    class="badge bg-success-subtle text-success border border-success-subtle ms-1">FREE
+                                    Delivery</span>
+                                {% else %}
+                                <span class="text-muted ms-1">(+Rs. {{ product.delivery_charges }} delivery)</span>
+                                {% endif %}
+                            </div>
+
+                            <div class="d-flex flex-wrap align-items-center gap-2 pt-2 border-top">
+                                <a href="{% url 'product_detail' product.id %}"
+                                    class="btn btn-info btn-sm px-3 fw-semibold shadow-sm">
+                                    {% icon 'eye' %} View Details
+                                </a>
+                                {% if product.created_by_id == request.user.id %}
+                                <a href="{% url 'edit_product' product.id %}"
+                                    class="btn btn-warning btn-sm px-3">
+                                    {% icon 'edit' %}
+                                    Edit
+                                </a>
+                                <a href="{% url 'delete_product' product.id %}"
+                                    class="btn btn-outline-danger btn-sm px-3">
+                                    {% icon 'delete' %}
+                                    Delete
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div id="tableCatalogView" class="card shadow-sm border-0 d-none">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover table-striped align-middle mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th scope="col" style="width: 100px;">Image</th>
+                        <th scope="col" style="width: 130px;">Product Code</th>
+                        <th scope="col">Product Name</th>
+                        <th scope="col">Category</th>
+                        <th scope="col">Base Price</th>
+                        <th scope="col">GST (%)</th>
+                        <th scope="col">Delivery</th>
+                        <th scope="col">Created By</th>
+                        <th scope="col" class="text-center" style="width: 180px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in products %}
+                    <tr>
+                        <td>
+                            <div class="bg-white rounded border d-flex align-items-center justify-content-center p-1"
+                                style="width: 80px; height: 80px;">
+                                {% if product.primary_image %}
+                                <a href="{% url 'product_detail' product.id %}">
+                                    <img src="{{ product.primary_image.image.url }}" alt="{{ product.name }}"
+                                        class="rounded" style="max-height: 72px; max-width: 72px; object-fit: contain;">
+                                </a>
+                                {% else %}
+                                <div class="text-muted text-center" style="font-size: 10px;">
+                                    No img
+                                </div>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-secondary font-monospace">{{ product.code }}</span>
+                        </td>
+                        <td>
+                            <a href="{% url 'product_detail' product.id %}"
+                                class="fw-bold text-decoration-none text-dark">
+                                {{ product.name }}
+                            </a>
+                            <div class="text-muted small text-truncate" style="max-width: 250px;">
+                                {{ product.description|truncatewords:8 }}
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-dark border">{{ product.category.name }}</span>
+                        </td>
+                        <td>
+                            <strong>Rs. {{ product.base_price }}</strong>
+                        </td>
+                        <td>
+                            {% if product.gst > 0 %}
+                            <span class="text-secondary">{{ product.gst }}%</span>
+                            {% else %}
+                            <span class="text-muted">0%</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="small fw-semibold">{{ product.get_delivery_type_display }}</div>
+                            <div class="text-muted small">
+                                {% if product.delivery_charges > 0 %}
+                                +Rs. {{ product.delivery_charges }}
+                                {% else %}
+                                <span class="text-success">Free Delivery</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            {% if product.created_by %}
+                            {% if product.created_by == request.user %}
+                            <span class="badge bg-primary">You</span>
+                            {% else %}
+                            <span class="badge bg-light text-dark border">{{ product.created_by.username }}{% if product.created_by == request.user %} (You){% endif %}</span>
+                            {% endif %}
+                            {% else %}
+                            <span class="text-muted small">System</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            <div class="btn-group btn-group-sm" role="group">
+                                <a href="{% url 'product_detail' product.id %}" class="btn btn-info"
+                                    title="View details">
+                                    {% icon 'eye' %} 
+                                    View
+                                </a>
+                                {% if product.created_by_id == request.user.id %}
+                                <a href="{% url 'edit_product' product.id %}" class="btn btn-warning"
+                                    title="Edit product">
+                                    {% icon 'edit' %}
+                                    Edit
+                                </a>
+                                <a href="{% url 'delete_product' product.id %}" class="btn btn-outline-danger"
+                                    title="Delete product">
+                                    {% icon 'delete' %}
+                                    Delete
+                                </a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    function switchView(view) {
+        const cardsView = document.getElementById('cardsCatalogView');
+        const tableView = document.getElementById('tableCatalogView');
+        const btnCards = document.getElementById('btnCardsView');
+        const btnTable = document.getElementById('btnTableView');
+
+        if (view === 'table') {
+            cardsView.classList.add('d-none');
+            tableView.classList.remove('d-none');
+            btnTable.classList.add('active');
+            btnCards.classList.remove('active');
+        } else {
+            tableView.classList.add('d-none');
+            cardsView.classList.remove('d-none');
+            btnCards.classList.add('active');
+            btnTable.classList.remove('active');
+        }
+    }
+</script>
+{% else %}
+<div class="card shadow-sm border-0 text-center py-5">
+    <h4 class="text-muted">No products found</h4>
+    <p class="text-secondary mb-4">Start populating your catalog by creating your first product.</p>
+    <div>
+        <a href="{% url 'create_product' %}" class="btn btn-primary">
+            Create Product Now
+        </a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends 'main/base.html' %}
+{% block title %}Sign Up - Shop Module{% endblock %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-7 col-lg-6">
+        <div class="card shadow-sm border-0 mt-4">
+            <div class="card-header bg-white py-3">
+                <h4 class="card-title mb-0 fw-bold">Create an Account</h4>
+                <p class="text-muted small mb-0">Fill in your Email ID and details to create your account.</p>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" novalidate>
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-primary">Sign Up &amp; Enter Web Panel</button>
+                    </div>
+                </form>
+                <div class="text-center mt-3 pt-3 border-top">
+                    <p class="text-muted small mb-0">Already have an account? <a href="{% url 'login' %}" class="fw-semibold">Login here</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

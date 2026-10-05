@@ -1,0 +1,179 @@
+{% extends 'main/base.html' %}
+{% block title %}Web Panel - Shop Module{% endblock %}
+{% load icons %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+    <div>
+        <h1 class="h2 mb-1">Web Panel Dashboard</h1>
+        <p class="text-muted mb-0">Welcome back, {{ request.user.username }}! Manage your store inventory and products.
+        </p>
+    </div>
+    <div class="btn-group">
+        <a href="{% url 'create_product' %}" class="btn btn-primary">{% icon 'plus' %} Create New Product</a>
+        <a href="{% url 'product_list' %}" class="btn btn-outline-secondary">{% icon 'list' %} View All Products</a>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-6 col-lg-3">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <h6 class="text-muted text-uppercase fw-semibold mb-2">Total Products</h6>
+                <div class="d-flex align-items-center justify-content-between">
+                    <span class="fs-2 fw-bold text-dark">{{ total_products }}</span>
+                    <a href="{% url 'product_list' %}" class="btn btn-sm btn-info">{% icon 'eye' %} View</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <h6 class="text-muted text-uppercase fw-semibold mb-2">Total Categories</h6>
+                <div class="d-flex align-items-center justify-content-between">
+                    <span class="fs-2 fw-bold text-dark">{{ total_categories }}</span>
+                    <span class="badge bg-secondary">System</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <h6 class="text-muted text-uppercase fw-semibold mb-2">Quick Action</h6>
+                <div class="mt-2">
+                    <a href="{% url 'create_product' %}" class="btn btn-sm btn-success w-100">Add Product</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <h6 class="text-muted text-uppercase fw-semibold mb-2">Inventory</h6>
+                <div class="mt-2">
+                    <a href="{% url 'product_list' %}" class="btn btn-sm btn-secondary w-100">Products Table</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h5 class="fw-bold mb-0">Recently Added Products</h5>
+        <p class="text-muted small mb-0">Latest additions to your store catalog with large image preview.</p>
+    </div>
+    <a href="{% url 'product_list' %}" class="btn btn-outline-primary btn-sm">See all products &rarr;</a>
+</div>
+
+{% if recent_products %}
+<div class="row g-3">
+    {% for product in recent_products %}
+    <div class="col-12">
+        <div class="card shadow-sm border-0 product-card overflow-hidden">
+            <div class="card-body p-3 p-md-4">
+                <div class="row g-3 align-items-center">
+                    <div class="col-12 col-sm-4 col-md-3 text-center">
+                        <div class="bg-white rounded border d-flex align-items-center justify-content-center p-2 position-relative mx-auto"
+                            style="width: 100%; max-width: 220px; height: 200px;">
+                            {% if product.primary_image %}
+                            <a href="{% url 'product_detail' product.id %}">
+                                <img src="{{ product.primary_image.image.url }}" alt="{{ product.name }}"
+                                    class="img-fluid rounded"
+                                    style="max-height: 185px; max-width: 100%; object-fit: contain;">
+                            </a>
+                            {% else %}
+                            <div class="text-center text-muted p-3">
+                                <div style="font-size: 2.5rem; opacity: 0.35;">📦</div>
+                                <div class="small fw-semibold mt-1 text-secondary">No Image</div>
+                            </div>
+                            {% endif %}
+                            {% if product.images.count > 1 %}
+                            <span class="badge bg-dark bg-opacity-75 position-absolute bottom-0 end-0 m-2 small">
+                                +{{ product.images.count|add:"-1" }} more
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-sm-8 col-md-9">
+                        <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                            <span class="badge bg-dark font-monospace">{{ product.code }}</span>
+                            <span class="badge bg-light text-dark border">{{ product.category.name }}</span>
+                            {% if product.created_by %}
+                            {% if product.created_by == request.user %}
+                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle">By
+                                You</span>
+                            {% else %}
+                            <span class="badge bg-dark text-warning  border">Seller: {{ product.created_by.username }}{% if product.created_by == request.user %} (You){% endif %}</span>
+                            {% endif %}
+                            {% endif %}
+                        </div>
+
+                        <h4 class="h5 fw-bold mb-1">
+                            <a href="{% url 'product_detail' product.id %}" class="text-dark text-decoration-none">
+                                {{ product.name }}
+                            </a>
+                        </h4>
+
+                        <p class="text-muted small mb-2"
+                            style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                            {{ product.description }}
+                        </p>
+
+                        <div class="d-flex flex-wrap align-items-baseline gap-2 my-2">
+                            <div class="fs-2 fw-bold text-dark lh-1">
+                                <span class="fs-5 align-top">Rs. </span>{{ product.base_price }}
+                            </div>
+                            {% if product.gst > 0 %}
+                            <span class="text-muted small">
+                                + Rs. {{ product.gst_amount }} ({{ product.gst }}% GST) &bull; Total: <strong
+                                    class="text-dark">Rs. {{ product.total_price }}</strong>
+                            </span>
+                            {% else %}
+                            <span class="text-muted small">(Inclusive of all taxes)</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3 small">
+                            <span class="fw-semibold text-dark">{{ product.get_delivery_type_display }}:</span>
+                            <span class="text-muted">{{ product.delivery_time }}</span>
+                            {% if product.delivery_charges == 0 %}
+                            <span class="badge bg-success-subtle text-success border border-success-subtle ms-1">FREE
+                                Delivery</span>
+                            {% else %}
+                            <span class="text-muted ms-1">(+Rs. {{ product.delivery_charges }} delivery)</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-flex flex-wrap align-items-center gap-2 pt-2 border-top">
+                            <a href="{% url 'product_detail' product.id %}"
+                                class="btn btn-info btn-sm px-3 fw-semibold shadow-sm">
+                                {% icon 'eye' %}
+                                View Details
+                            </a>
+                            {% if product.created_by_id == request.user.id %}
+                            <a href="{% url 'edit_product' product.id %}" class="btn btn-warning btn-sm px-3">
+                                {% icon 'edit' %}
+                                Edit
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card shadow-sm border-0 text-center py-5">
+    <p class="text-muted mb-3">No products created yet.</p>
+    <div>
+        <a href="{% url 'create_product' %}" class="btn btn-primary btn-sm">Create First Product</a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

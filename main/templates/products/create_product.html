@@ -1,0 +1,243 @@
+{% extends 'main/base.html' %}
+{% block title %}Create Product - Shop Module{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h1 class="h3 mb-1">Create Product</h1>
+                <p class="text-muted mb-0">Fill in the details below to add a new product to the catalog.</p>
+            </div>
+            <a href="{% url 'product_list' %}" class="btn btn-outline-secondary btn-sm">&larr; Back to Products</a>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data" novalidate>
+            {% csrf_token %}
+
+            <div class="card mb-4 shadow-sm border-0">
+                <div class="card-header bg-white py-3">
+                    <h5 class="card-title mb-0 fw-bold">1. Product Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-8">
+                            <label for="{{ form.name.id_for_label }}" class="form-label fw-semibold">Product Name <span
+                                    class="text-danger">*</span></label>
+                            {{ form.name }}
+                            {% if form.name.errors %}
+                            <div class="text-danger small mt-1">{{ form.name.errors|striptags }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Product Code</label>
+                            <input type="text" class="form-control bg-light" value="Auto-generated upon save" readonly
+                                disabled>
+                            <small class="form-text text-muted">Format: PRD-XXXXXX</small>
+                        </div>
+
+                        <div class="col-md-12">
+                            <label for="{{ form.category.id_for_label }}" class="form-label fw-semibold">Category <span
+                                    class="text-danger">*</span></label>
+                            {{ form.category }}
+                            {% if form.category.errors %}
+                            <div class="text-danger small mt-1">{{ form.category.errors|striptags }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-12">
+                            <label for="{{ form.description.id_for_label }}" class="form-label fw-semibold">Product
+                                Description <span class="text-danger">*</span></label>
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                            <div class="text-danger small mt-1">{{ form.description.errors|striptags }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4 shadow-sm border-0">
+                <div class="card-header bg-white py-3">
+                    <h5 class="card-title mb-0 fw-bold">2. Pricing &amp; Tax</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.base_price.id_for_label }}" class="form-label fw-semibold">Base Price
+                                (Rs. ) <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text">Rs. </span>
+                                {{ form.base_price }}
+                            </div>
+                            {% if form.base_price.errors %}
+                            <div class="text-danger small mt-1">{{ form.base_price.errors|striptags }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="{{ form.gst.id_for_label }}" class="form-label fw-semibold">GST (%) <span
+                                    class="text-danger">*</span></label>
+                            <div class="input-group">
+                                {{ form.gst }}
+                                <span class="input-group-text">%</span>
+                            </div>
+                            <small class="form-text text-muted">Maximum 18%.</small>
+                            {% if form.gst.errors %}
+                            <div class="text-danger small mt-1">{{ form.gst.errors|striptags }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-12">
+                            <label for="{{ form.other_taxes.id_for_label }}" class="form-label fw-semibold">Other
+                                Applicable Tax Details</label>
+                            {{ form.other_taxes }}
+                            <small class="form-text text-muted">E.g., Cess, surcharge, or customs duty notes if
+                                applicable.</small>
+                            {% if form.other_taxes.errors %}
+                            <div class="text-danger small mt-1">{{ form.other_taxes.errors|striptags }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4 shadow-sm border-0">
+                <div class="card-header bg-white py-3">
+                    <h5 class="card-title mb-0 fw-bold">3. Delivery &amp; Pricing Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label for="{{ form.delivery_type.id_for_label }}" class="form-label fw-semibold">Delivery
+                                Type <span class="text-danger">*</span></label>
+                            {{ form.delivery_type }}
+                            {% if form.delivery_type.errors %}
+                            <div class="text-danger small mt-1">{{ form.delivery_type.errors|striptags }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="{{ form.delivery_time.id_for_label }}" class="form-label fw-semibold">Delivery
+                                Time <span class="badge bg-secondary">Auto</span></label>
+                            {{ form.delivery_time }}
+                            <small class="form-text text-muted">Auto-populated based on delivery type
+                                (non-editable).</small>
+                            {% if form.delivery_time.errors %}
+                            <div class="text-danger small mt-1">{{ form.delivery_time.errors|striptags }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="{{ form.delivery_charges.id_for_label }}"
+                                class="form-label fw-semibold">Delivery Charges (Rs. ) <span
+                                    class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text">Rs. </span>
+                                {{ form.delivery_charges }}
+                            </div>
+                            <small class="form-text text-muted" id="delivery_charges_help">Maximum Rs. 100.</small>
+                            {% if form.delivery_charges.errors %}
+                            <div class="text-danger small mt-1">{{ form.delivery_charges.errors|striptags }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4 shadow-sm border-0">
+                <div class="card-header bg-white py-3">
+                    <h5 class="card-title mb-0 fw-bold">4. Required Details (Images, URLs &amp; Other Information)</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-12">
+                            <label for="{{ form.images.id_for_label }}" class="form-label fw-semibold">Product
+                                Images</label>
+                            {{ form.images }}
+                            <small class="form-text text-muted">You can select multiple images (JPG, PNG, WEBP). First
+                                image becomes primary.</small>
+                            {% if form.images.errors %}
+                            <div class="text-danger small mt-1">{{ form.images.errors|striptags }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-12">
+                            <label for="{{ form.urls.id_for_label }}" class="form-label fw-semibold">URLs</label>
+                            {{ form.urls }}
+                            {% if form.urls.errors %}
+                            <div class="text-danger small mt-1">{{ form.urls.errors|striptags }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-12">
+                            <label for="{{ form.other_information.id_for_label }}" class="form-label fw-semibold">Other
+                                Relevant Information</label>
+                            {{ form.other_information }}
+                            <small class="form-text text-muted">Specifications, manufacturer details, warranty terms, or
+                                special instructions.</small>
+                            {% if form.other_information.errors %}
+                            <div class="text-danger small mt-1">{{ form.other_information.errors|striptags }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 mb-5">
+                <a href="{% url 'product_list' %}" class="btn btn-outline-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary px-4">Save Product</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const deliveryTimeMap = {
+            'STANDARD': '3-5 Business Days',
+            'EXPRESS': '1-2 Business Days',
+            'SAME_DAY': 'Within 24 Hours',
+            'PICKUP': 'Immediate / Store Hours'
+        };
+
+        const deliveryTypeSelect = document.getElementById('id_delivery_type');
+        const deliveryTimeInput = document.getElementById('id_delivery_time');
+        const deliveryChargesInput = document.getElementById('id_delivery_charges');
+        const deliveryChargesHelp = document.getElementById('delivery_charges_help');
+
+        function syncDeliveryDetails() {
+            if (!deliveryTypeSelect) return;
+            const selectedType = deliveryTypeSelect.value;
+            if (deliveryTimeMap[selectedType] && deliveryTimeInput) {
+                deliveryTimeInput.value = deliveryTimeMap[selectedType];
+            }
+
+            if (deliveryChargesInput) {
+                if (selectedType === 'PICKUP') {
+                    deliveryChargesInput.value = '0.00';
+                    deliveryChargesInput.readOnly = true;
+                    deliveryChargesInput.classList.add('bg-light');
+                    if (deliveryChargesHelp) {
+                        deliveryChargesHelp.textContent = 'Store pickup has no delivery charges (non-editable: Rs. 0.00).';
+                        deliveryChargesHelp.className = 'form-text text-success fw-semibold';
+                    }
+                } else {
+                    deliveryChargesInput.readOnly = false;
+                    deliveryChargesInput.classList.remove('bg-light');
+                    if (deliveryChargesHelp) {
+                        deliveryChargesHelp.textContent = 'Maximum Rs. 100.';
+                        deliveryChargesHelp.className = 'form-text text-muted';
+                    }
+                }
+            }
+        }
+
+        if (deliveryTypeSelect) {
+            deliveryTypeSelect.addEventListener('change', syncDeliveryDetails);
+            syncDeliveryDetails();
+        }
+    });
+</script>
+{% endblock %}
