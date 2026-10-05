@@ -82,7 +82,7 @@ A modular, robust, and production-ready **Shop and Product Management Web Applic
 | **Authentication** | Django Auth + Custom Backend | Dual Email or Username authentication |
 | **Image Processing** | Pillow 12.3.0 | Product image validation and storage |
 | **Form Rendering** | `django-crispy-forms` + `crispy-bootstrap5` | Clean, accessible Bootstrap form layouts |
-| **Icon Framework** | `django-icons` + Custom Renderer | FontAwesome 6 semantic icon rendering |
+| **Icon Framework** | `django-icons` | FontAwesome 6 semantic icon rendering |
 | **Frontend Styling** | Bootstrap 5.3.3 | Responsive modern grid & UI components |
 | **Icon Font** | FontAwesome 6.5.1 CDN | Solid vector icon library |
 
@@ -197,7 +197,7 @@ The application enforces business rules across client JavaScript, Django Forms, 
 
 ## 🎨 Icon Subsystem (`django-icons`)
 
-The module integrates `django-icons` with custom renderer architecture:
+The module integrates `django-icons`:
 
 1. **Settings-Level Semantic Mapping**:
    Configured in `settings.py` under `DJANGO_ICONS`:
@@ -240,7 +240,6 @@ shopmodule/
     ├── backends.py                 # EmailOrUsernameBackend
     ├── forms.py                    # RegisterForm & ProductForm (with MultiFileField)
     ├── models.py                   # Category, Product, ProductImage, ProductURL
-    ├── renderers.py                # Custom FontAwesome6Renderer for django-icons
     ├── urls.py                     # Shop module URL endpoints
     ├── views.py                    # Authentication, dashboard & CRUD views
     ├── templatetags/               # Custom template tags
