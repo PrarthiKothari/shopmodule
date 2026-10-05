@@ -199,9 +199,7 @@ The application enforces business rules across client JavaScript, Django Forms, 
 
 The module integrates `django-icons` with custom renderer architecture:
 
-1. **Custom FontAwesome 6 Renderer (`main.renderers.FontAwesome6Renderer`)**:
-   Automatically ensures icon identifiers (such as `"edit"`, `"trash"`, `"view"`, `"plus"`) generate standard FontAwesome 6 Solid markup (`fa-solid fa-<name>`) while retaining support for custom prefixes (`fa-regular`, `fa-brands`).
-2. **Settings-Level Semantic Mapping**:
+1. **Settings-Level Semantic Mapping**:
    Configured in `settings.py` under `DJANGO_ICONS`:
    - `edit` $\rightarrow$ `fa-solid fa-pen-to-square`
    - `trash` / `delete` $\rightarrow$ `fa-solid fa-trash`
@@ -210,9 +208,9 @@ The module integrates `django-icons` with custom renderer architecture:
    - `plus` $\rightarrow$ `fa-solid fa-plus`
    - `list` $\rightarrow$ `fa-solid fa-list`
  
-3. **Template Tag Compatibility**:
+2. **Template Tag Compatibility**:
    Supports standard `{% load icons %}`
-4. **Spacing Utility Support**:
+3. **Spacing Utility Support**:
    Supports passing Bootstrap spacing classes directly (e.g. `{% icon "edit" "me-1" %}` $\rightarrow$ `<i class="fa-solid fa-pen-to-square me-1"></i>`).
 
 ---
