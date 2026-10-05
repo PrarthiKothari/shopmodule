@@ -46,12 +46,12 @@ A modular, robust, and production-ready **Shop and Product Management Web Applic
 - **Dynamic Delivery Synchronization**:
   - Selecting a **Delivery Type** automatically populates the **Delivery Time** field in real time.
   - Delivery time inputs are strictly read-only and non-editable by the user.
-  - Selecting **Store Pickup** locks the **Delivery Charges** to `₹0.00` and disables the charge input automatically.
+  - Selecting **Store Pickup** locks the **Delivery Charges** to `Rs. 0.00` and disables the charge input automatically.
 - **Multi-File Image Upload**: Supports selecting and uploading multiple product images simultaneously (`JPG`, `PNG`, `WEBP`), designating the first uploaded image as primary.
 - **URL Syntax Auto-Fix**: Automatically prepends `https://` to plain domains entered without a protocol (e.g., `example.com` $\rightarrow$ `https://example.com`), followed by standard `URLValidator` inspection.
 
 ### 3. Product Catalog & Dual-View Presentation (`/products/`)
-- **Amazon-Style Large Cards**: Showcases products with large previews (200px container), category badges, product codes, Rs. formatting, GST breakdown, delivery indicators, and action buttons.
+- **Large Cards**: Showcases products with large previews (200px container), category badges, product codes, Rs. formatting, GST breakdown, delivery indicators, and action buttons.
 - **Table Catalog View**: Alternate dense tabular layout featuring 80px image thumbnails, quick stats, and compact action controls.
 - **Interactive View Switcher**: Instant switching between Large Cards and Table View without reloading the page.
 
@@ -179,7 +179,7 @@ The application enforces business rules across client JavaScript, Django Forms, 
 | **Base Price** | Strictly $\ge 0.00$ | Model Validator, Form Clean, HTML Input | *"Base price cannot be negative."* |
 | **GST** | Strictly $0.00 \le \text{GST} \le 18.00\%$ | Model Validator, Form Clean, Model Clean | *"GST cannot exceed 18%."* |
 | **Delivery Charges** | Strictly $0.00 \le \text{Charges} \le 100.00$ | Model Validator, Form Clean, Model Clean | *"Delivery charges cannot exceed 100."* |
-| **Store Pickup** | Delivery charges must be ₹0.00 | JS Auto-set, Form Clean, Model Clean | *"Store pickup cannot have delivery charges (must be ₹0.00)."* |
+| **Store Pickup** | Delivery charges must be Rs. 0.00 | JS Auto-set, Form Clean, Model Clean | *"Store pickup cannot have delivery charges (must be Rs. 0.00)."* |
 | **Delivery Time** | Auto-mapped based on Delivery Type | JS Auto-set, Form Clean, Model Clean | Fixed to Delivery Type mapping |
 | **URLs** | Must be valid HTTP/HTTPS URLs; automatically prefixes `https://` if protocol omitted | Form Clean (`clean_urls`), `URLValidator` | *"Invalid URL entered: '...'. Please enter a valid URL."* |
 | **Ownership** | User must be creator to Edit, Delete, Revive, or Purge | View Permission checks | *"Permission Denied: You cannot modify a product created by another user."* |
@@ -188,10 +188,10 @@ The application enforces business rules across client JavaScript, Django Forms, 
 
 | Delivery Type Code | Selection Label | Default Delivery Time | Delivery Charge Restriction |
 |---|---|---|---|
-| `STANDARD` | Standard Delivery | `3-5 Business Days` | $\le ₹100.00$ |
-| `EXPRESS` | Express Delivery | `1-2 Business Days` | $\le ₹100.00$ |
-| `SAME_DAY` | Same Day Delivery | `Within 24 Hours` | $\le ₹100.00$ |
-| `PICKUP` | Store Pickup | `Immediate / Store Hours` | **Strictly ₹0.00 (Non-editable)** |
+| `STANDARD` | Standard Delivery | `3-5 Business Days` | $\le Rs. 100.00$ |
+| `EXPRESS` | Express Delivery | `1-2 Business Days` | $\le Rs. 100.00$ |
+| `SAME_DAY` | Same Day Delivery | `Within 24 Hours` | $\le Rs. 100.00$ |
+| `PICKUP` | Store Pickup | `Immediate / Store Hours` | **Strictly Rs. 0.00 (Non-editable)** |
 
 ---
 
@@ -205,15 +205,13 @@ The module integrates `django-icons` with custom renderer architecture:
    Configured in `settings.py` under `DJANGO_ICONS`:
    - `edit` $\rightarrow$ `fa-solid fa-pen-to-square`
    - `trash` / `delete` $\rightarrow$ `fa-solid fa-trash`
-   - `view` $\rightarrow$ `fa-solid fa-eye`
-   - `create` / `plus` $\rightarrow$ `fa-solid fa-plus`
-   - `revive` $\rightarrow$ `fa-solid fa-rotate-left`
-   - `purge` $\rightarrow$ `fa-solid fa-fire`
-   - `back` $\rightarrow$ `fa-solid fa-arrow-left`
-   - `save` $\rightarrow$ `fa-solid fa-check`
-   - `cancel` $\rightarrow$ `fa-solid fa-xmark`
+   - `view` / `eye` $\rightarrow$ `fa-solid fa-eye`
+   - `home` $\rightarrow$ `fa-solid fa-house`
+   - `plus` $\rightarrow$ `fa-solid fa-plus`
+   - `list` $\rightarrow$ `fa-solid fa-list`
+ 
 3. **Template Tag Compatibility**:
-   Supports both standard `{% load icons %}` and aliased `{% load django_icons %}` via `main/templatetags/django_icons.py`.
+   Supports standard `{% load icons %}`
 4. **Spacing Utility Support**:
    Supports passing Bootstrap spacing classes directly (e.g. `{% icon "edit" "me-1" %}` $\rightarrow$ `<i class="fa-solid fa-pen-to-square me-1"></i>`).
 
@@ -248,8 +246,7 @@ shopmodule/
     ├── urls.py                     # Shop module URL endpoints
     ├── views.py                    # Authentication, dashboard & CRUD views
     ├── templatetags/               # Custom template tags
-    │   ├── __init__.py
-    │   └── django_icons.py         # django_icons template tag alias
+    │   └── __init__.py
     ├── migrations/                 # Database migrations
     │   ├── 0001_initial.py
     │   ├── 0002_productimage_producturl.py
